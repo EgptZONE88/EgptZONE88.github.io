@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0d12">
+<title>Hope — تثبيت وتشغيل على التليفون</title>
+<style>
+  :root { --bg:#0b0d12; --card:#14161d; --green:#3ddc84; --blue:#9fd7ff; --txt:#e6edf3; --mut:#9aa4b2; }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body { margin:0; background:var(--bg); color:var(--txt); font-family:system-ui,"Segoe UI",Tahoma,sans-serif;
+         padding:18px 16px 46px; line-height:1.7; }
+  .head { text-align:center; padding:10px 0 4px; }
+  .logo { width:76px; height:76px; border-radius:20px; display:inline-block; }
+  h1 { font-size:23px; margin:10px 0 2px; }
+  .sub { color:var(--blue); font-size:14.5px; margin:0; }
+  .status { display:flex; gap:8px; align-items:center; justify-content:center; margin:14px 0 4px;
+            font-size:14px; color:var(--mut); }
+  .dot { width:11px; height:11px; border-radius:50%; background:#666; box-shadow:0 0 0 0 rgba(0,0,0,0); }
+  .dot.on { background:var(--green); animation:p 1.4s infinite; }
+  .dot.off { background:#ff6d5e; }
+  @keyframes p { 0%{box-shadow:0 0 0 0 rgba(61,220,132,.5)} 70%{box-shadow:0 0 0 12px rgba(61,220,132,0)} 100%{box-shadow:0 0 0 0 rgba(61,220,132,0)} }
+  .btn { display:block; width:100%; border:0; border-radius:16px; padding:17px 14px; margin:12px 0 0;
+         font-size:19px; font-weight:700; cursor:pointer; text-decoration:none; text-align:center; }
+  .go { background:linear-gradient(180deg,#3ddc84,#22b666); color:#06210f; box-shadow:0 8px 26px rgba(61,220,132,.3); }
+  .sec { background:var(--card); color:var(--txt); border:1px solid #262a33; font-size:16px; }
+  .go:active,.sec:active { transform:scale(.985); }
+  .count { text-align:center; color:var(--mut); font-size:13.5px; min-height:20px; margin-top:8px; }
+  .card { background:var(--card); border:1px solid #222631; border-radius:16px; padding:14px 16px; margin:16px 0 0; }
+  .card h2 { font-size:16.5px; margin:0 0 8px; color:var(--green); }
+  .card ol,.card ul { margin:6px 0 0; padding-right:20px; }
+  .card li { margin:7px 0; font-size:14.8px; }
+  .kbd { background:#0e1016; border:1px solid #2a2f3a; border-radius:7px; padding:1px 8px; font-size:13.5px; color:var(--blue); }
+  .note { border-color:#3a3416; background:#191710; }
+  .note h2 { color:#f5c518; }
+  .ok { color:var(--green); } .bad { color:#ff6d5e; }
+  .hidden { display:none; }
+  footer { text-align:center; color:#5b6472; font-size:12.5px; margin-top:26px; }
+  a.lnk { color:var(--blue); }
+</style>
+</head>
+<body>
+<div class="head">
+  <img class="logo" src="icons/icon-192.png" alt="" onerror="this.style.display='none'">
+  <h1>Hope — محجر الفلتو</h1>
+  <p class="sub">تفتحه وثبّته على شاشة التليفون في خطوتين</p>
+</div>
+
+<div class="status"><span class="dot" id="dot"></span><span id="stTxt">بيتاكد إن اللابتوب شغال…</span></div>
+
+<a class="btn go" id="openBtn" href="#">🚀 افتح التطبيق الآن</a>
+<a class="btn sec hidden" id="httpsBtn" href="#">🎙 افتح نسخة HTTPS (الصوت محتاجها)</a>
+<div class="count" id="count"></div>
+
+<div class="card">
+  <h2>١ · التثبيت على الشاشة الرئيسية</h2>
+  <ol>
+    <li>اضغط زر «افتح التطبيق» فوق.</li>
+    <li>في كروم: اضغط <span class="kbd">⋮</span> ← <b>تثبيت التطبيق</b> أو <b>إضافة إلى الشاشة الرئيسية</b>.</li>
+    <li>في سامسونج إنترنت: <span class="kbd">⋮</span> ← <b>الصفحة</b> ← <b>إضافة إلى الشاشة الرئيسية</b>.</li>
+    <li>هيتعمل أيقونة بالاسم — بعدها بتفتح من غير متصفح وتشتغل بملء الشاشة.</li>
+  </ol>
+</div>
+
+<div class="card note">
+  <h2>⚡ شغّال محلي — من غير نت (Local-first)</h2>
+  <ul>
+    <li><b>العقل شغال على اللابتوب:</b> الملفات والذكريات والمهام كلها محلي — التليفون بس شاشة وصوت.</li>
+    <li><b>بعد التثبيت:</b> الواجهة والذاكرة الأوفلاين بتشتغل حتى لو النت قطع تمامًا (زي فكرتك اللي في الفيديو — كل حاجة عندك أنت).</li>
+    <li><b>الصوت والذكاء بس</b> محتاجين نت أول ما تتكلم (جيميناي لايف) — والباقي مش بيهم.</li>
+    <li><b>واتساب:</b> الرسائل والردود بتشتغل محليًا دايمًا — حتى لو النت قطع (إلا تحويل الرسالة الصوتية لنص).</li>
+  </ul>
+</div>
+
+<div class="card note">
+  <h2>🔒 الأمان والخصوصية — باختصار</h2>
+  <ul>
+    <li><b>مافيش فيروسات ولا طرف تالت:</b> الكود كله مفتوح على اللابتوب بتاعك، ومافيش وسيط بينك وبين حد.</li>
+    <li><b>مفتاح جيميني بيفضل على الـPC</b> — التليفون ما بياخدوش أبدًا.</li>
+    <li><b>رمز دخول خاص بيك</b> — من غيره مافيش حد يقدر يفتح أي حاجة.</li>
+    <li><b>واتساب محلي ١٠٠٪</b> — وصلة بين اللابتوب وتليفونك، مافيش خدمة خارجية بتشوف رسائلك.</li>
+    <li><b>الأذونات</b> (ميكروفون/موقع/إشعارات): إنت اللي بتمنحها من داخل التطبيق (تبويب ⚡ ← الإعدادات ← 🔐 الأذونات)، وتقدر تشيلها في أي وقت من إعدادات المتصفح.</li>
+    <li><b>كودات QR للدخول محدّثة كل شهر</b> — القديمة بتتقفل لوحدها.</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>٢ · لو ما فتحش</h2>
+  <ul>
+    <li>اللابتوب لازم يكون شغّال — شغّل <span class="kbd">Hope - هوب.bat</span>.</li>
+    <li>التليفون واللابتوب على <b>نفس الواي فاي</b> (مش بيانات).</li>
+    <li>الصوت على التليفون محتاج <b>HTTPS</b> — من اللابتوب شغّل الاختيار <span class="kbd">2</span> في ملف التشغيل وبعدين اضغط زر HTTPS فوق.</li>
+    <li>لو الرابط اتغيّر (الواي فاي اتغيّر): افتح من اللابتوب <span class="kbd">http://localhost:8765/install.html</span> وأخد نسخة جديدة من الصفحة دي.</li>
+  </ul>
+</div>
+
+<footer>Hope — نفس الدماغ أونلاين وأوفلاين · <span id="base"></span></footer>
+
+<script>
+(function () {
+  var PORT = 8765;
+  // مرشحات الـIP (لو الواي فاي اتغيّر، نجرّبهم كلهم) — الحالي أولًا
+  var IPS = ["192.168.1.2", "192.168.0.102"];
+  var q = new URLSearchParams(location.search);
+  var TOKEN = q.get("t") || "125888";
+  var hereIsApp = String(location.port) === String(PORT) && location.protocol.indexOf("http") === 0;
+  var wantAuto = q.get("auto") !== "0";
+  var base = hereIsApp ? location.origin : ("http://" + IPS[0] + ":" + PORT);
+
+  function url(b) { return b + "/?t=" + encodeURIComponent(TOKEN); }
+  document.getElementById("openBtn").href = url(base);
+  document.getElementById("httpsBtn").href = url(base.replace("http://", "https://"));
+  document.getElementById("base").textContent = base;
+
+  var dot = document.getElementById("dot"), stTxt = document.getElementById("stTxt"),
+      count = document.getElementById("count");
+
+  function probe(u) {
+    return new Promise(function (res) {
+      var done = false;
+      var t = setTimeout(function () { if (!done) { done = true; res(false); } }, 2200);
+      try {
+        fetch(u, { mode: "no-cors", cache: "no-store" })
+          .then(function () { if (!done) { done = true; clearTimeout(t); res(true); } })
+          .catch(function () { if (!done) { done = true; clearTimeout(t); res(false); } });
+      } catch (e) { if (!done) { done = true; clearTimeout(t); res(false); } }
+    });
+  }
+
+  function findServer(i) {
+    if (i >= IPS.length) {
+      dot.className = "dot off";
+      stTxt.textContent = "ملاقيش اللابتوب — اتأكد إنه شاغل ونفس الواي فاي";
+      count.textContent = "تقدر تفتح على أي حال بالزر فوق — لو مش شغال هتقولك «مش متاح».";
+      return;
+    }
+    var b = "http://" + IPS[i] + ":" + PORT;
+    probe(b + "/").then(function (up) {
+      if (!up) return findServer(i + 1);
+      base = b;
+      document.getElementById("openBtn").href = url(base);
+      document.getElementById("httpsBtn").href = url(base.replace("http://", "https://"));
+      document.getElementById("base").textContent = base;
+      dot.className = "dot on";
+      stTxt.textContent = "اللابتوب شغال ✔ — بنفتح التطبيق…";
+      if (!wantAuto) return;
+      var n = 2;
+      count.textContent = "بيفتح بعد " + n + "… (اضغط لإلغاء)";
+      var iv = setInterval(function () {
+        n--;
+        if (n <= 0) { clearInterval(iv); location.href = url(base); return; }
+        count.textContent = "بيفتح بعد " + n + "… (اضغط لإلغاء)";
+      }, 1000);
+      count.onclick = function () { clearInterval(iv); count.textContent = ""; };
+    });
+  }
+
+  // صفحة جاية من السيرفر نفسه → تعرض أزرارها بس (المستخدم اختار يجي هنا)
+  if (hereIsApp) {
+    dot.className = "dot on"; stTxt.textContent = "السيرفر شغال ✔ — دي خطوات التثبيت";
+    return;
+  }
+  // ملف متفتح على التليفون → نتاكد من اللابتوب ونفتح لوحده
+  findServer(0);
+})();
+</script>
+</body>
+</html>

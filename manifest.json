@@ -1,0 +1,19 @@
+{
+  "name": "Hope v2.0 — محجر حجر الفلتو",
+  "short_name": "Hope v2",
+  "description": "Hope v2.0 — مساعد المحجر الصوتي Astra 6: حسابات وإكسل وجوجل درايف بجيميناي لايف",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0e1013",
+  "theme_color": "#e8b44a",
+  "lang": "ar-EG",
+  "dir": "rtl",
+  "categories": ["business", "productivity", "finance"],
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

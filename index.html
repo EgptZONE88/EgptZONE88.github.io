@@ -1,0 +1,623 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+<meta name="theme-color" content="#0e1013" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+<meta name="apple-mobile-web-app-title" content="Hope v2.0" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+<link rel="icon" type="image/png" href="/icons/icon-192.png" />
+<link rel="stylesheet" href="/style.css" />
+<title>Hope v2.0 — محجر حجر الفلتو</title>
+</head>
+<body data-state="boot" class="astra-v2">
+
+<!-- ═══════ الدماغ الحي (خلف كل حاجة) ═══════ -->
+<canvas id="brainCv" aria-hidden="true"></canvas>
+
+<!-- ═══════ مقدمة «العقل» — شاشة ترحيب ساحرة بزر تخطٍّ direct للشات ═══════ -->
+<div id="splash" class="splash">
+  <div class="splash-inner">
+    <div class="orb orb-hero" aria-hidden="true"></div>
+    <h1 class="splash-title">Hope</h1>
+    <p class="splash-sub">Hope — محاسب المحجر الصوتي</p>
+    <p id="splashThought" class="splash-thought">عقله دلوقتي بيفكر…</p>
+    <div class="splash-acts">
+      <button id="splashSkip" class="btn-hero" type="button">ابدأ الشغل ➤</button>
+    </div>
+    <p class="splash-hint">اضغط «ابدأ» عشان تدخل على المحادثة والشات مباشرة</p>
+  </div>
+</div>
+
+<!-- ═══════ الشريط العلوي ═══════ -->
+<header id="top">
+  <div id="orb" class="orb-sm" aria-hidden="true"></div>
+  <div id="titles">
+    <b>Hope</b>
+    <span id="status">بيتهيأ…</span>
+  </div>
+  <button id="netSwitch" class="netswitch" data-mode="wait" type="button"
+          title="حالة الشبكة — اضغط تحدّث">
+    <span class="ns-track"><i class="ns-knob"></i></span>
+    <span class="ns-txt" id="netSwTxt">CHECKING</span>
+  </button>
+  <button id="soundDot" class="sound-dot off" type="button" title="حالة الصوت — اضغط تفتح الصوت">🔇 <span class="sd-txt">الصوت مقفول</span></button>
+  <button id="mindBtn" class="chip" type="button" title="شوف عالم عقله">🧠 عقله</button>
+  <button id="brainBtn" class="chip" type="button" title="شوف شغله وهو بيحصل">⚡ شغله</button>
+  <button id="qrBtn" class="ibtn" type="button" title="امسح بكاميرا التليفون">▦</button>
+  <button id="googleBtn" class="chip ibtn" type="button" title="جوجل درايف">☁︎</button>
+  <button id="newChat" class="ibtn" type="button" title="محادثة جديدة">🗨</button>
+  <button id="setBtn" class="ibtn" type="button" title="إعدادات">⚙︎</button>
+</header>
+
+<!-- ═══════ لوحة الملاحة الحيّة — الهدف الحالي والمسافة (زي خرائط جوجل) ═══════ -->
+<div id="navBar" class="navbar hidden" aria-hidden="true">
+  <div class="nv-ico">🏁</div>
+  <div class="nv-txt">
+    <b id="nvTarget">—</b>
+    <small id="nvMeta">—</small>
+  </div>
+  <div class="nv-prog"><i id="nvProg"></i></div>
+  <button id="nvClose" class="nv-x" type="button" aria-label="إخفاء اللوحة">✕</button>
+  <ul id="orderList" class="orders"></ul>
+</div>
+
+<!-- ═══════ الأعصاب الرئيسية (بتنبض مع شغله) ═══════ -->
+<div id="regionLegend" aria-hidden="true">
+  <button class="lchip" data-reg="front" type="button" style="--c:#4285f4"><i></i>تفكير وأدوات</button>
+  <button class="lchip" data-reg="parietal" type="button" style="--c:#7cb8ff"><i></i>أفعال ونتيجة</button>
+  <button class="lchip" data-reg="temporal" type="button" style="--c:#c77dff"><i></i>صوت وكلام</button>
+  <button class="lchip" data-reg="occipital" type="button" style="--c:#3ddc84"><i></i>ذاكرة وملفات</button>
+  <button class="lchip" data-reg="limbic" type="button" style="--c:#ff9d8a"><i></i>أسئلة وتعلّم</button>
+  <button class="lchip" data-reg="stem" type="button" style="--c:#57d9e8"><i></i>اتصال وجوجل</button>
+</div>
+
+<!-- ═══════ شاشة: تكلّم (محادثة صوتية مع هوب — مفهوم Google Assistant) ═══════ -->
+<section id="view-talk" class="view on">
+<main id="chat" aria-live="polite"></main>
+
+<!-- ═══════ اقتراحات ═══════ -->
+<div id="chips" class="chips-wrap">
+  <button class="sug" data-q="إيه أخبار ديون المحجر دلوقتي؟">الديون دلوقتي؟</button>
+  <button class="sug" data-q="اعرض كشف المرتبات كامل">كشف المرتبات</button>
+  <button class="sug" data-q="كسب ولا خسر في سبتمبر؟">كسب ولا خسر؟</button>
+  <button class="sug" data-q="اقرا لي ملف الخزنة">اقرا الخزنة</button>
+  <button class="sug" data-q="اعمل تقرير الشهر كله">تقرير الشهر</button>
+  <button class="sug" data-q="إيه اللي محفوظ عندك عن محمد العرايشي؟">ذاكرتك</button>
+</div>
+
+<!-- ═══════ شريط الكتابة (شات كامل: إرفاق + إيموجي + صوت) ═══════ -->
+<div id="composer">
+  <button id="attachBtn" class="cbtn" type="button" aria-label="إرفاق" title="إرفاق">📎</button>
+  <textarea id="text" rows="1" autocomplete="off" placeholder="اكتب لـهوب…"></textarea>
+  <button id="emojiBtn" class="cbtn" type="button" aria-label="إيموجي" title="إيموجي">😊</button>
+  <button id="sendBtn" class="cbtn sendbtn hidden" type="button" aria-label="إرسال" title="إرسال">➤</button>
+  <button id="mic" type="button" aria-label="ميكروفون">
+    <svg viewBox="0 0 24 24" width="26" height="26" fill="none">
+      <path d="M12 15a3.5 3.5 0 0 0 3.5-3.5v-5a3.5 3.5 0 1 0-7 0v5A3.5 3.5 0 0 0 12 15Z" fill="currentColor"/>
+      <path d="M6 11.5a6 6 0 0 0 12 0M12 17.5V21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+  </button>
+</div>
+<div id="attachMenu" class="popmenu hidden">
+  <button type="button" data-a="image">🖼️ صورة من المعرض</button>
+  <button type="button" data-a="camera">📷 كاميرا</button>
+  <button type="button" data-a="file">📄 ملف / جدول</button>
+  <button type="button" data-a="loc">📍 موقعي</button>
+  <button type="button" data-a="screen">🖥 مشاركة شاشتي</button>
+  <button type="button" data-a="devices">📡 أجهزة الشبكة</button>
+</div>
+<div id="emojiMenu" class="popmenu emoji hidden"></div>
+<input id="upImage" type="file" accept="image/*" hidden />
+<input id="upImageCam" type="file" accept="image/*" capture="environment" hidden />
+<input id="upFile" type="file"
+       accept=".txt,.csv,.md,.json,.log,.xml,.html,.htm,.py,.js,.sql,.ini,.yml,.yaml,.tsv,.xls,.xlsx"
+       hidden />
+</section>
+
+<!-- ═══════ شاشة: المحادثات (Business Messages — رسائل العمل) ═══════ -->
+<section id="view-chats" class="view">
+  <div class="chats-head">
+    <span>المحادثات</span>
+    <span class="chats-me" id="imMe"></span>
+    <button id="imNewGroup" class="ibtn hidden" type="button" title="جروب جديد">➕</button>
+  </div>
+  <div id="imList" class="chats-list"></div>
+</section>
+
+<!-- ═══════ شاشة: محادثة مفتوحة ═══════ -->
+<section id="view-chat" class="view">
+  <div class="chat-head">
+    <button id="imBack" class="ibtn" type="button" title="رجوع">→</button>
+    <div class="ch-av" id="imChatAv">🌤</div>
+    <div class="ch-tt"><b id="imChatName">…</b><span id="imChatSub"></span></div>
+  </div>
+  <main id="imMsgs" class="im-msgs"></main>
+  <div id="imComposer" class="im-composer">
+    <button id="imLoc" class="ibtn" type="button" title="شارك موقعي">📍</button>
+    <input id="imText" type="text" placeholder="اكتب رسالة…" autocomplete="off" />
+    <button id="imRec" class="ibtn" type="button" title="سجّل رسالة صوتية">🎤</button>
+    <button id="imSend" class="ibtn gold" type="button" title="ابعت">➤</button>
+  </div>
+</section>
+
+<!-- ═══════ شاشة: المساعدون (مصنع مساعدات الشغل) ═══════ -->
+<section id="view-agents" class="view">
+  <div class="ag-head"><span>🤖 مساعدات الشغل</span>
+    <p class="hint">من قوالب جاهزة — أو اصنع مساعدك الخاص باسمه وشغله ومهاراته</p>
+  </div>
+  <div id="agTemplates" class="ag-grid"></div>
+  <div class="ag-build" id="agBuildBox">
+    <h3>🛠 اصنع مساعدك الخاص</h3>
+    <input id="agvName" type="text" placeholder="اسمه (مثال: مسؤول الشحن)" autocomplete="off" />
+    <textarea id="agJob" rows="2" placeholder="شغله باختصار (مثال: بيتابع العربيات والشحنات اليومية)"></textarea>
+    <div id="agSkills" class="ag-skills"></div>
+    <button id="agCreate" class="btn-gold" type="button">اتبع المساعد ✔</button>
+  </div>
+</section>
+
+<!-- ═══════ شريط التنقّل السفلي ═══════ -->
+<nav id="nav">
+  <button data-v="chats" type="button"><i>💬</i><span>المحادثات</span><em id="navUnread" class="badge hidden">0</em></button>
+  <button data-v="talk" type="button" class="on"><i>🎙</i><span>تكلّم</span></button>
+  <button data-v="agents" type="button"><i>🤖</i><span>المساعدون</span></button>
+</nav>
+
+<!-- ═══════ طبقة رمز الدخول ═══════ -->
+<!-- ═══════ أول مرة: ترحيب + دخول جوجل + أمان ═══════ -->
+<div id="welcome" class="overlay hidden">
+  <div class="gate-card">
+    <div class="orb orb-gate"></div>
+    <h2>أهلًا بيك في <b>Hope</b> 🌤 — «هوب»</h2>
+    <p class="bsub">مساعد مكتب محجر حجر الفلتو — شغّال محليًا على جهازك أنت:
+      كل بياناتك (الإكسل، الذاكرة، واتساب) محفوظة على الـPC بتاعك، ومافيش أي طرف تالت
+      ليه وصول غيرك أنت.</p>
+    <div class="btn-row">
+      <button id="welGoogle" class="btn-gold" type="button">ابدأ بحساب جوجل ☁︎</button>
+      <button id="welLocal" class="mini" type="button">دخول محلي ➤</button>
+    </div>
+    <p class="bsub" id="welMsg"></p>
+    <p class="bsub">🔒 الـAPI key بتاع جيميني بيفضل على الـPC مش على التليفون — والويب شغال
+      برموز دخول خاصة بيك بس.</p>
+  </div>
+</div>
+
+<div id="gate" class="overlay hidden">
+  <div class="gate-card">
+    <div class="orb orb-gate"></div>
+    <h2>أهلًا بيك 👋</h2>
+    <p class="bsub">Hope — محاسب المحجر الصوتي</p>
+    <p>ادخل كلمة السر عشان تدخل</p>
+    <input id="gateInput" type="password" inputmode="numeric" autocomplete="off" placeholder="كلمة السر" />
+    <button id="gateBtn" type="button">دخول</button>
+    <p id="gateErr" class="err"></p>
+  </div>
+</div>
+
+<!-- ═══════ دخول بكلمة السر الوحيدة ═══════ -->
+<div id="login" class="overlay hidden">
+  <div class="gate-card">
+    <div class="orb orb-gate"></div>
+    <h2 id="lgTitle">تسجيل الدخول</h2>
+    <p class="bsub" id="lgSub">كلمة السر بس — الدخول محلي على جهازك بس 🔒</p>
+    <div id="lgStep1">
+      <input id="lgPass" type="password" inputmode="numeric" dir="ltr"
+             placeholder="كلمة السر" autocomplete="current-password" />
+      <button id="lgMain" class="btn-gold" type="button">دخول ✔</button>
+    </div>
+    <p id="lgErr" class="err"></p>
+    <p class="bsub">🔒 كل حاجة (الرسائل/الذكريات/الأرقام) محفوظة على الـPC بتاع المكتب —
+      ومافيش طرف تالت بينكم.</p>
+  </div>
+</div>
+
+<!-- ═══════ بانر التثبيت ═══════ -->
+<div id="install" class="banner hidden">
+  <span>ضيف Hope للشاشة الرئيسية</span>
+  <button id="installYes" type="button">تثبيت</button>
+  <button id="installNo" type="button" aria-label="إغلاق">✕</button>
+</div>
+
+<!-- ═══════ QR سريع — امسحه بكاميرا التليفون يفتح التطبيق ═══════ -->
+<div id="qrOverlay" class="overlay hidden">
+  <div class="gate-card qr-card">
+    <div class="orb orb-gate"></div>
+    <h2>افتح Hope من التليفون 📱</h2>
+    <p class="bsub">وجّه كاميرا التليفون على الرمز ده — أو دوس على الأيقونة تحت.</p>
+    <img id="qrImg" alt="QR" width="208" height="208" />
+    <p id="qrUrl" class="qr-url"></p>
+    <div class="qr-acts">
+      <button id="qrOpen" type="button">افتح في تبويب جديد</button>
+      <button id="qrNetlify" type="button" class="netlify-entry">
+        <span class="net-icon">🚀</span> افتح على Netlify
+      </button>
+      <button id="qrClose" type="button" class="ghost">✕ إغلاق</button>
+    </div>
+    <p class="qr-hint">لو الكاميرا ما اشتغلتش: انسخ الرابط وافتحه في كروم على التليفون (نفس الواي فاي).</p>
+
+    <!-- أيقونة التطبيق العامة — نفس اللوقو، قابلة للنقر والمسح -->
+    <div class="netlify-qr-block">
+      <p class="bsub">📲 رمز التطبيق على الإنترنت — امسحه أو دوس عليه:</p>
+      <a id="netlifyQrLink" class="netlify-qr-link" href="https://egptzone88.github.io/"
+         target="_blank" rel="noopener" title="افتح Hope على النت">
+        <img id="qrNetlifyImg" src="/icons/qr-netlify.png" alt="QR تطبيق الإنترنت" width="176" height="176" />
+      </a>
+      <p class="bsub" dir="ltr">https://egptzone88.github.io/</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ شاشة العقل (وضع الواقع — شوف شغله وهو بيحصل) ═══════ -->
+<div id="brain" class="brain hidden">
+  <div class="brain-head">
+    <b>🧠 عالم Hope</b>
+    <span id="liveDot" class="livedot" title="بث حي">●</span>
+    <button id="brainClose" class="bclose" type="button" aria-label="إغلاق">✕</button>
+  </div>
+  <div class="brain-tabs">
+    <button data-bt="feed" class="on" type="button">النشاط الحي</button>
+    <button data-bt="tasks" type="button">مهامه 📌</button>
+    <button data-bt="notes" type="button">ملفاته 📂</button>
+    <button data-bt="apps" type="button">وصلاته 🔗</button>
+    <button data-bt="wa" type="button">واتساب 💬</button>
+    <button data-bt="map" type="button">خريطة 🗺</button>
+    <button data-bt="browse" type="button">متصفحه 🖥</button>
+    <button data-bt="files" type="button">ملفات النظام 📁</button>
+    <button data-bt="draw" type="button">رسم ✏️</button>
+    <button data-bt="agents" type="button">مساعديه 🤖</button>
+  </div>
+
+  <!-- سؤال Hope للمدير (تعلّم ذاتي) -->
+  <div id="qBox" class="qbox hidden">
+    <div class="qhead">❓ Hope محتاج يفهم منك</div>
+    <div id="qText" class="qtext"></div>
+    <div id="qOpts" class="qopts"></div>
+    <div class="qrow">
+      <input id="qInput" placeholder="اكتب إجابتك…" />
+      <button id="qSend" type="button">إرسال</button>
+    </div>
+  </div>
+
+  <!-- سجل النشاط الحي -->
+  <div id="bt-feed" class="btab on">
+    <div id="feedList" class="feed"></div>
+  </div>
+
+  <!-- مهامه وتذكيراته (Hope بيوصّلها بتنبيه في ميعادها) -->
+  <div id="bt-tasks" class="btab">
+    <div id="taskList" class="feed"></div>
+  </div>
+
+  <!-- مساحة العمل: ملفاته، ذاكرته، ملاحظاته -->
+  <div id="bt-notes" class="btab">
+    <div id="wsList" class="feed"></div>
+    <div id="wsRead" class="wsread hidden">
+      <div class="wsread-head"><b id="wsTitle"></b><button id="wsClose" type="button">✕</button></div>
+      <pre id="wsBody" class="wsbody"></pre>
+      <div class="wsread-acts">
+        <button id="wsAsk" class="btn-gold" type="button">🎙 اسأل Hope عنها</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- المساعدين الفرعيين -->
+  <div id="bt-agents" class="btab">
+    <p class="hint">Hope بيستدعي مساعدين متخصصين يشتغلوا معاه في نفس الوقت — تقدر انت كمان تستدعيهم.</p>
+    <div class="agent-chips">
+      <button class="sug arole" type="button" data-role="مكتب" data-task="راجع ديون الموردين وقول مين أكبر دين">🧑‍💼 المكتب</button>
+      <button class="sug arole" type="button" data-role="ذاكرة" data-task="لخص أهم الذكريات المحفوظة عن العاملين">🧠 الذاكرة</button>
+      <button class="sug arole" type="button" data-role="تقارير" data-task="اقترح تقرير شهري مبسط للمدير">📊 التقارير</button>
+      <button class="sug arole" type="button" data-role="جوجل" data-task="اشرحلي إيه اللي محتاج يتزامن على جوجل درايف">☁︎ جوجل</button>
+      <button class="sug arole" type="button" data-role="تعلم" data-task="اقترح 3 حاجات جديدة تتعلمها عشان تخدم المدير أحسن">🎓 التعلم</button>
+    </div>
+    <form id="agentForm" class="agentform">
+      <input id="agRole" placeholder="اسم المساعد (مكتب/ذاكرة/تقارير/جوجل/تعلم)" />
+      <textarea id="agTask" rows="2" placeholder="المهمة…"></textarea>
+      <button class="btn-gold" type="submit">🚀 استدعِ المساعد</button>
+    </form>
+    <div id="agentLog" class="feed"></div>
+  </div>
+
+  <!-- الوصلات (Applets): تطبيقات وخدمات خارجية -->
+  <div id="bt-apps" class="btab">
+    <p class="hint">وصّل Hope بأدوات برّه بضغطة واحدة — حساب جوجل، مفتاح جيت هاب، بريد SMTP…
+      والمتصفح والطقس والواتساب مدمجين دايمًا.</p>
+    <div id="apList" class="aplist"></div>
+  </div>
+
+  <!-- ✏️ لوحة الرسم (Canvas) — قلم/لون/ممحاة/تراجع/حفظ — لمس على التليفون -->
+  <div id="bt-draw" class="btab">
+    <div class="drawbar">
+      <button id="dwPen" class="mini on" type="button">✏️ قلم</button>
+      <input id="dwColor" type="color" value="#151515" title="لون القلم">
+      <input id="dwSize" type="range" min="1" max="26" value="4" title="سُمك الخط">
+      <button id="dwEraser" class="mini" type="button">🧽 ممحاة</button>
+      <button id="dwUndo" class="mini" type="button">↩ تراجع</button>
+      <button id="dwClear" class="mini" type="button">🗑 فضي</button>
+      <button id="dwSave" class="mini gold" type="button">💾 حفظ PNG</button>
+    </div>
+    <canvas id="dwCv" class="drawcv"></canvas>
+    <p class="hint">ارسم بإصبعك على التليفون أو بالماوس على الكمبيوتر — «حفظ» بينزّل الرسمة PNG على الجهاز.</p>
+  </div>
+
+  <!-- واتساب المدير: ردّ تلقائي على العمال والموردين بمستويات صلاحية -->
+  <div id="bt-wa" class="btab">
+    <p class="hint">واتسابك شغّال محليًا على الـPC بتاعك (من غير أي طرف تالت) —
+      فعّل الردّ التلقائي في أي جروب، وحدّد صلاحية كل واحد يتكلم.</p>
+    <div class="wa-bar">
+      <span id="waSt" class="wa-st">بيحمّل…</span>
+      <button id="waRefresh" class="mini" type="button">تحديث 🔄</button>
+    </div>
+    <div id="waChats" class="feed"></div>
+    <div class="set-sec-head" style="margin-top:10px"><span>🔐 صلاحيات الأشخاص</span></div>
+    <p class="hint">full = كل بيانات المحجر · self = مرتبه وأيامه هو · basic = بدون أرقام · none = ردود مهذبة فقط</p>
+    <div id="waAccess" class="feed"></div>
+  </div>
+
+  <!-- خريطة المكان 3D: مواقع العمال (واتساب + GPS) -->
+  <div id="bt-map" class="btab">
+    <div class="map-bar">
+      <button id="mapMe" class="mini gold" type="button">📍 شارك موقعي</button>
+      <button id="mapRefresh" class="mini" type="button">تحديث 🔄</button>
+      <span class="hint">آخر تحديث: <span id="mapTs">—</span></span>
+    </div>
+    <div id="map3d" class="map3d"><div class="map-msg" id="mapMsg">بنحمّل الخريطة… (أول مرة تحتاج إنترنت)</div></div>
+    <div id="mapList" class="feed"></div>
+  </div>
+
+  <!-- متصفحه: يشوفه وهو بيفتح الصفحات (Browser-use شايف الشاشة) -->
+  <div id="bt-browse" class="btab">
+    <div class="brbar">
+      <span class="brdot" aria-hidden="true"></span>
+      <span id="brUrl">لسه ما فتحش حاجة…</span>
+      <a id="brOpen" class="brlink hidden" target="_blank" rel="noopener" title="افتح في نافذة">↗</a>
+    </div>
+    <div id="brPreview" class="brpreview">
+      <div id="brText" class="brtext">أي صفحة يفتحها Hope بتظهر هنا حيًا — العنوان والمتن —
+        كأنك شايف شاشته وهو بيشتغل على المهمة.</div>
+      <iframe id="brFrame" class="brframe hidden"
+              sandbox="allow-scripts allow-popups allow-forms"
+              title="صفحة Hope الحالية" referrerpolicy="no-referrer"></iframe>
+    </div>
+    <div id="brSteps" class="brsteps"></div>
+  </div>
+
+  <!-- 📁 متصفح الملفات الداخلي — يشوف ملفات Hope والذاكرة المخزنة -->
+  <div id="bt-files" class="btab">
+    <div class="file-browser">
+      <div class="file-header">
+        <span>📁 ملفات النظام والذاكرة</span>
+        <div class="file-path" id="filePath">.</div>
+      </div>
+      <div class="file-list" id="fileList"></div>
+      <div class="file-actions">
+        <button id="fileRefresh" class="mini" type="button">تحديث 🔄</button>
+        <button id="fileUp" class="mini" type="button">↑ إلى الأعلى</button>
+      </div>
+    </div>
+    <!-- مشاهد الملف -->
+    <div id="fileViewer" class="file-viewer hidden">
+      <div class="file-view-head">
+        <span id="fileViewName"></span>
+        <button id="fileViewClose" type="button">✕</button>
+        <button id="fileViewAsk" class="btn-gold" type="button">🎙 اسأل Hope عنها</button>
+      </div>
+      <div class="file-view-body">
+        <pre id="fileViewContent"></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<!-- ═══════ الإعدادات ═══════ -->
+<div id="setSheet" class="overlay hidden">
+  <div class="gate-card set-card">
+    <div class="orb orb-gate"></div>
+    <h2>⚙︎ إعدادات Hope</h2>
+    <label class="setrow"><span>صوت Hope</span>
+      <select id="voiceSel">
+        <option>Puck</option><option>Kore</option><option>Charon</option>
+        <option>Fenrir</option><option>Aoede</option><option>Leda</option><option>Zephyr</option>
+      </select>
+    </label>
+    <div class="setrow"><span>رابط التطبيق على Netlify 🌐</span>
+      <input id="netlifyUrl" type="url" placeholder="https://egptzone88.github.io/" dir="ltr" />
+    </div>
+    <div class="setrow"><span>تنبيهات أسئلته 🔔</span>
+      <button id="notifBtn" class="mini" type="button">تفعيل</button></div>
+    <div class="setrow"><span>سجل المحادثة</span>
+      <button id="setNewChat" class="mini" type="button">محادثة جديدة 🗨</button></div>
+    <div class="setrow"><span>لوحة التحكم الكاملة</span>
+      <a class="mini alink" href="/panel">↗ فتح</a></div>
+
+    <!-- ── المكالمة الصوتية الدائم (Wake word — «هوب» يصحى لوحده) ── -->
+    <div class="set-sec-head" id="callHead">
+      <span>📞 مكالمة صوتية دائمة</span>
+      <button id="callToggle" class="mini" type="button">عرض ▾</button>
+    </div>
+    <div id="callBox" class="set-sec hidden">
+      <p class="bsub">فعّل ده والتليفون بيفضل يسمع باسمي «هوب» — أول ما تقوله بيفتح
+        ويسمعك ويردّ عليك من غير ما تفتح التطبيق ولا تضغط حاجة. زي مكالمة مفتوحة معاك.</p>
+      <div class="setrow"><span>الاستماع الدائم</span>
+        <button id="alwaysBtn" class="mini" type="button">🔇 فعّل مكالمة صوتية</button></div>
+      <p class="bsub">📱 أول ما تقول «هوب» أو «يا هوب» بيفتح ويستقبلك. اسأله وقوله
+        «خلاص» أو «كفاية» يقفل المايك ويرجع يستنى تاني.</p>
+      <p class="bsub">🔋 نصيحة: سيب التليفون موصول بالشاحن وافتح التطبيق في الخلفية
+        عشان الاستماع ما يفصلش.</p>
+      <div class="btn-row"><button id="wakeWl" class="mini" type="button">إبقاء الشاشة مفتوحة 🌙</button></div>
+    </div>
+
+    <!-- ── الأذونات (وضع إذن مبسّط — أيقونة لكل صلاحية) ── -->
+    <div class="set-sec-head" id="permHead">
+      <span>🔐 الأذونات</span>
+      <button id="permToggle" class="mini" type="button">عرض ▾</button>
+    </div>
+    <div id="permBox" class="set-sec hidden">
+      <p class="bsub">كل صلاحية ليها وظيفة واضحة — دوس على أي صف تمنحه، أو «امنح الكل» مرة واحدة.</p>
+      <div id="permList" class="perm-list"></div>
+      <div class="btn-row"><button id="permAll" class="mini gold" type="button">امنح الكل ⚡</button></div>
+      <p class="bsub">🔒 كل الأذونات دي بتشتغل محليًا — مافيش أي بيانات بتتبعت لجهة تالتة غير جيميني (للجواب الصوتي) بس.</p>
+    </div>
+
+    <!-- ── المزوّدات ── -->
+    <div class="set-sec-head" id="provHead">
+      <span>🧩 مزوّدات الذكاء الاصطناعي</span>
+      <button id="provToggle" class="mini" type="button">عرض ▾</button>
+    </div>
+    <div id="provBox" class="set-sec hidden">
+      <p class="bsub">اختار تشتغل بأونلاين (مفتاحك أنت) أو محلي على جهازك. خطوات بسيطة:</p>
+      <div class="prov-active" id="provActive">—</div>
+      <div id="provList" class="chip-list"></div>
+      <div class="mini-form">
+        <select id="provKind">
+          <option value="gemini">جوجل جيميني (أونلاين)</option>
+          <option value="openai">متوافق مع OpenAI (OpenRouter/Groq/DeepSeek…)</option>
+          <option value="ollama">Ollama (محلي — بدون إنترنت)</option>
+        </select>
+        <input id="provName" type="text" placeholder="اسم يسهل تذكّره (اختياري)">
+        <input id="provBase" type="text" placeholder="العنوان (base_url) — فيه افتراضي">
+        <input id="provKey" type="password" placeholder="المفتاح API (اختياري للـOllama)">
+        <input id="provModel" type="text" placeholder="اسم الموديل (مثل gemini-2.5-flash)">
+        <div class="btn-row">
+          <button id="provTest" class="mini" type="button">تجربة الاتصال</button>
+          <button id="provSave" class="mini gold" type="button">حفظ ✔</button>
+          <button id="provNew" class="mini" type="button">جديد ➕</button>
+        </div>
+        <div id="provMsg" class="bsub"></div>
+      </div>
+
+      <!-- مفاتيح جيميني — تبديل تلقائي لو مفتاح اتعذّر (429) -->
+      <div class="prov-active">🔑 مفاتيح جيميني (تبديل تلقائي عند الازدحام)</div>
+      <p class="bsub">لو مفتاح رجّع «429» بيبرّد لوحده ونجرّب اللي بعده تلقائيًا —
+        ضيف أي مفتاح تاني هنا من غير ما تغيّر حاجة.</p>
+      <div id="keyList" class="chip-list"></div>
+      <div id="keyReady" class="bsub">—</div>
+      <div class="mini-form">
+        <input id="keyNew" type="password" dir="ltr" autocomplete="off"
+               placeholder="مفتاح جيميني جديد (AI Studio)" />
+        <div class="btn-row">
+          <button id="keyAdd" class="mini gold" type="button">إضافة مفتاح ➕</button>
+        </div>
+        <div id="keyMsg" class="bsub"></div>
+      </div>
+    </div>
+
+    <!-- ── موديل جوجل على الجهاز (أوفلاين كامل) ── -->
+    <div class="set-sec-head" id="odHead">
+      <span>📱 موديل جوجل على الجهاز (أوفلاين كامل)</span>
+      <button id="odToggle" class="mini" type="button">عرض ▾</button>
+    </div>
+    <div id="odBox" class="set-sec hidden">
+      <p class="bsub">Gemma (جوجل) شغّال جوّه المتصفح نفسه: لو السيرفر قطع
+        (الواي فاي فصل / بره المكتب) الردود بتيجي من الجهاز — صفر إنترنت،
+        صفر اشتراك، وكل البيانات بتفضل عندك. أول تنزيل بس محتاج نت
+        وبيتخزّن في المتصفح للأبد.</p>
+      <div class="prov-active" id="odStatus">—</div>
+      <div id="odProgressWrap" class="od-progress hidden"><div id="odProgress"></div></div>
+      <div class="mini-form">
+        <select id="odModel">
+          <option value="gemma-4-E2B-it-q4f16_1-MLC">Gemma 4 E2B — الأقوى (تنزيل ≈2.9GB)</option>
+          <option value="gemma-2-2b-it-q4f16_1-MLC-1k">Gemma 2 2B — متوازن (تنزيل ≈1.6GB)</option>
+          <option value="gemma3-1b-it-q4f16_1-MLC">Gemma 3 1B — أخف وأسرع للهواتف (تنزيل ≈750MB)</option>
+        </select>
+        <div class="btn-row">
+          <button id="odOn" class="mini gold" type="button">تنزيل وتفعيل ⬇</button>
+          <button id="odOff" class="mini" type="button">إيقاف ✕</button>
+        </div>
+        <div id="odMsg" class="bsub"></div>
+      </div>
+      <p class="bsub">💡 للموبايل اختار موديل أخف (Gemma 3 1B) — وللّاب اختار
+        Gemma 4 E2B. التفعيل ده على الجهاز الحالي بس (كل جهاز بينزّل مرّة).</p>
+    </div>
+
+    <!-- ── موديلات أوفلاين على السيرفر (Gemma على Ollama) ── -->
+    <div class="set-sec-head" id="ollHead">
+      <span>💾 موديلات أوفلاين على السيرفر (Gemma — بدون إنترنت)</span>
+      <button id="ollToggle" class="mini" type="button">عرض ▾</button>
+    </div>
+    <div id="ollBox" class="set-sec hidden">
+      <p class="bsub">لو حبيت تشغّل موديل محلي على الـPC نفسه (Ollama) عشان تشتغل
+        من غير إنترنت نهائيًا — نزّله من هنا بضغطة واحدة والسيرفر يتابع التقدّم.
+        ده غير موديل المتصفح اللي فوق (اللي بيشتغل على التليفون لوحده).</p>
+      <div class="prov-active" id="ollStatus">—</div>
+      <div id="ollProgWrap" class="od-progress hidden"><div id="ollProg"></div></div>
+      <div id="ollMsg" class="bsub"></div>
+      <div class="mini-form">
+        <div id="ollInstalled" class="chip-list bsub">—</div>
+        <div class="bsub">📌 مقترح للتنزيل:</div>
+        <div id="ollCatalog" class="chip-list"></div>
+      </div>
+      <p class="bsub">💡 Gemma 4B أحسن توازن للاستخدام اليومي — وكل الموديلات دي
+        بتفضل على جهازك انت بس، ما بتتبعتش لجهة تالتة.</p>
+    </div>
+
+    <!-- ── المساعدات المخصّصة ── -->
+    <div class="set-sec-head" id="agentHead">
+      <span>🤖 المساعدات المتخصّصة</span>
+      <button id="agentToggle" class="mini" type="button">عرض ▾</button>
+    </div>
+    <div id="agentBox" class="set-sec hidden">
+      <p class="bsub">اضف مساعد متخصص بنفسك — أو اطلب من Hope يعمله («اعمل مساعد فاحص ديون»).</p>
+      <div id="agentList" class="chip-list"></div>
+      <div class="mini-form">
+        <input id="agName" type="text" placeholder="اسم المساعد (مثل: فاحص ديون)">
+        <input id="agSpec" type="text" placeholder="التخصص باختصار">
+        <input id="agPrompt" type="text" placeholder="شخصيته/تعليماته (اختياري)">
+        <div class="btn-row">
+          <button id="agSave" class="mini gold" type="button">إضافة ➕</button>
+          <button id="agRefresh" class="mini" type="button">تحديث 🔄</button>
+        </div>
+        <div id="agMsg" class="bsub"></div>
+      </div>
+    </div>
+
+    <!-- ── المستخدمون (دخول بالتليفون — للمدير) ── -->
+    <div class="set-sec-head" id="usrHead">
+      <span>👥 المستخدمون (دخول بالتليفون)</span>
+      <button id="usrToggle" class="mini" type="button">عرض ▾</button>
+    </div>
+    <div id="usrBox" class="set-sec hidden">
+      <p class="bsub">العمال يدخلوا برقم تليفونهم + PIN. كود الـOTP بيوصل هنا
+        (صندوق محلي بدل الـSMS):</p>
+      <div id="usrList" class="chip-list"></div>
+      <div id="usrOtps" class="bsub"></div>
+      <div class="mini-form">
+        <input id="usrPhone" type="tel" dir="ltr" inputmode="numeric" maxlength="11"
+               placeholder="رقم التليفون 01xxxxxxxxx" />
+        <input id="usrName" type="text" placeholder="الاسم (يظهر في المحادثات)" />
+        <input id="usrPin" type="password" dir="ltr" inputmode="numeric"
+               placeholder="PIN (٤ أرقام أو أكتر)" />
+        <select id="usrAccess">
+          <option value="self">self — هو بس (مرتبه وأيامه)</option>
+          <option value="basic">basic — معلومات عامة بدون أرقام</option>
+          <option value="full">full — كل بيانات المحجر</option>
+          <option value="none">none — ردود مهذبة فقط</option>
+        </select>
+        <div class="btn-row">
+          <button id="usrAdd" class="mini gold" type="button">إضافة ➕</button>
+          <button id="usrRefresh" class="mini" type="button">تحديث 🔄</button>
+        </div>
+        <div id="usrMsg" class="bsub"></div>
+      </div>
+    </div>
+
+    <p class="bsub">Hope v2 — محجر حجر الفلتو</p>
+    <button id="setClose" class="btn-gold" type="button">تمام</button>
+  </div>
+</div>
+
+<script src="/brain.js"></script>
+<script src="/store.js"></script>
+<script src="/offline.js"></script>
+<script src="/sync.js"></script>
+<script src="/ondevice.js"></script>
+<script src="/app.js"></script>
+<script src="/im.js"></script>
+</body>
+</html>

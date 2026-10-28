@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0e0f13" />
+<link rel="icon" type="image/png" href="/icons/icon-192.png" />
+<link rel="stylesheet" href="/panel.css" />
+<title>Hope — لوحة التحكم</title>
+</head>
+<body>
+
+<header id="top">
+  <div class="orb-sm" aria-hidden="true"></div>
+  <div class="titles">
+    <b>لوحة تحكم Hope</b>
+    <span id="hstat">بتتحمّل…</span>
+  </div>
+  <a class="chip" href="/">🎙 الصوت</a>
+  <span id="gchip" class="chip" title="حالة جوجل درايف">☁︎ …</span>
+</header>
+
+<nav id="tabs">
+  <button data-tab="home" class="on">نظرة عامة</button>
+  <button data-tab="mem">الذكريات</button>
+  <button data-tab="notes">الملاحظات</button>
+  <button data-tab="people">الأشخاص</button>
+  <button data-tab="office">المكتب</button>
+  <button data-tab="google">جوجل</button>
+  <button data-tab="apps">🔗 الوصلات</button>
+  <button data-tab="brain">🧠 نشاط حي</button>
+  <button data-tab="ws">🗂 مساحته</button>
+  <button data-tab="logs">السجل</button>
+</nav>
+
+<main id="main">
+
+  <!-- ═══════ نظرة عامة ═══════ -->
+  <section id="tab-home" class="tab on">
+    <div class="cards">
+      <div class="card"><span class="num" id="cMem">–</span><span class="lbl">ذكريات محفوظة</span></div>
+      <div class="card"><span class="num" id="cPeople">–</span><span class="lbl">شخص معروف</span></div>
+      <div class="card"><span class="num" id="cNotes">–</span><span class="lbl">ملاحظة مشروع</span></div>
+      <div class="card"><span class="num" id="cSheets">–</span><span class="lbl">شيت جوجل</span></div>
+      <div class="card"><span class="num" id="cDb">–</span><span class="lbl">حجم القاعدة (KB)</span></div>
+      <div class="card"><span class="num" id="cSync">–</span><span class="lbl">آخر مزامنة</span></div>
+    </div>
+    <div class="box">
+      <div class="row"><span>الموديل الصوتي</span><b id="iModel">…</b></div>
+      <div class="row"><span>جوجل درايف</span><b id="iGoogle">…</b></div>
+      <div class="row"><span>مساحة العمل</span><b id="iWork" dir="ltr">…</b></div>
+      <div class="row"><span>ملفات المكتب (2026)</span><b id="iOffice" dir="ltr">…</b></div>
+      <div class="row"><span>بناء فهرس الأسماء</span><b id="iBuilt">…</b></div>
+    </div>
+    <div class="btn-row">
+      <button id="btnRefresh" class="btn">🔄 تحديث</button>
+      <button id="btnRebuild" class="btn">🗂 إعادة بناء فهرس الأسماء</button>
+      <button id="btnSync" class="btn gold">☁︎ مزامنة كل شيء مع درايف</button>
+    </div>
+  </section>
+
+  <!-- ═══════ الذكريات ═══════ -->
+  <section id="tab-mem" class="tab">
+    <form id="memForm" class="box form">
+      <h3>➕ احفظ ذكرة جديدة</h3>
+      <input id="mName" placeholder="اسم الشخص أو الموضوع (لو جديد بيتخزن باسمه)" />
+      <select id="mCat">
+        <option value="">تلقائي</option>
+        <option>عاملين</option><option>موردين</option><option>عملاء</option><option>عام</option>
+      </select>
+      <textarea id="mNote" rows="2" placeholder="الذكرة… مثال: مطلوب منه فاتورة سولار يوم الأحد"></textarea>
+      <button class="btn" type="submit">حفظ في القاعدة</button>
+    </form>
+    <div class="toolbar">
+      <input id="memQ" placeholder="🔍 ابحث في الذكريات…" />
+      <select id="memCatF">
+        <option value="">كل التصنيفات</option>
+        <option>عاملين</option><option>موردين</option><option>عملاء</option><option>عام</option>
+      </select>
+      <span id="memCount" class="count"></span>
+    </div>
+    <div id="memList" class="list"></div>
+  </section>
+
+  <!-- ═══════ الملاحظات ═══════ -->
+  <section id="tab-notes" class="tab">
+    <form id="noteForm" class="box form">
+      <h3>➕ ملاحظة مشروع جديدة</h3>
+      <input id="nTitle" placeholder="العنوان… مثال: تأمينات العاملين" />
+      <textarea id="nContent" rows="2" placeholder="الملاحظة المهمة…"></textarea>
+      <button class="btn" type="submit">حفظ</button>
+    </form>
+    <div class="toolbar">
+      <input id="noteQ" placeholder="🔍 ابحث في الملاحظات…" />
+      <span id="noteCount" class="count"></span>
+    </div>
+    <div id="noteList" class="list"></div>
+  </section>
+
+  <!-- ═══════ الأشخاص ═══════ -->
+  <section id="tab-people" class="tab">
+    <div class="toolbar">
+      <input id="pQ" placeholder="🔍 ابحث باسم…" />
+      <select id="pCatF">
+        <option value="">الكل</option>
+        <option>عاملين</option><option>موردين</option><option>عملاء</option>
+      </select>
+      <button id="btnRebuild2" class="btn small">🔄 من الإكسل</button>
+    </div>
+    <p class="hint">الأسماء دي مستخرجة من ملفات إكسل 2026 العربية — كل اسم بيتفتحله ذاكرة باسمه.</p>
+    <div id="peopleList" class="list"></div>
+  </section>
+
+  <!-- ═══════ المكتب ═══════ -->
+  <section id="tab-office" class="tab">
+    <div class="toolbar wrap">
+      <button class="btn small" id="btnFiles">📂 قائمة الملفات</button>
+      <button class="btn small of" data-f="خزنة">الخزنة</button>
+      <button class="btn small of" data-f="مبيعات">المبيعات</button>
+      <button class="btn small of" data-f="موردين">ديون الموردين</button>
+      <button class="btn small of" data-f="مرتبات">المرتبات</button>
+      <button class="btn small of" data-f="جرد">الجرد</button>
+      <button class="btn small of" data-f="نولون">النولون</button>
+      <button class="btn small of" data-f="نيسان">نيسان</button>
+      <button class="btn small of" data-f="معدات">المعدات</button>
+      <button class="btn small of" data-f="إنتاج">الإنتاج</button>
+    </div>
+    <pre id="officeOut" class="out">اختر ملف…</pre>
+  </section>
+
+  <!-- ═══════ جوجل ═══════ -->
+  <section id="tab-google" class="tab">
+    <div class="box">
+      <div class="row"><span>الاتصال</span><b id="gState">…</b></div>
+      <div class="row"><span>الحساب</span><b id="gMail">…</b></div>
+      <div class="btn-row">
+        <button id="btnGConnect" class="btn">🔗 اتصل بجوجل درايف</button>
+        <button id="btnSync2" class="btn gold">☁︎ مزامنة الذاكرة</button>
+      </div>
+      <p class="hint">النطاق مقصور على مجلد «Hope - محجر الفلتو» بس — ملفاتك القديمة مش هتتشاف أبدًا.</p>
+    </div>
+
+    <div class="box">
+      <h3>📁 تصفّح مجلد Hope على درايف</h3>
+      <div class="toolbar">
+        <input id="dvPath" placeholder="مسار… مثال: 01_ذكريات/عاملين (أو فاضي للجذر)" />
+        <button id="btnDvList" class="btn small">فتح</button>
+      </div>
+      <div id="dvOut" class="list"></div>
+    </div>
+
+    <div class="box">
+      <h3>📊 شيتات جوجل</h3>
+      <div id="shList" class="list"></div>
+      <div class="toolbar">
+        <input id="shTitle" placeholder="اسم الشيت الجديد" />
+        <input id="shHeaders" placeholder="عناوين مفصولة بفاصلة (اختياري)" />
+        <button id="btnShCreate" class="btn small">إنشاء شيت</button>
+      </div>
+      <div class="toolbar">
+        <input id="shReadT" placeholder="اسم شيت للقراءة" />
+        <button id="btnShRead" class="btn small">اقرا</button>
+      </div>
+      <pre id="shOut" class="out"></pre>
+      <div class="toolbar">
+        <input id="shAppendT" placeholder="اسم الشيت" />
+        <input id="shAppendR" placeholder="قيم السطر مفصولة بفاصلة" />
+        <button id="btnShAppend" class="btn small">زود سطر</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ الوصلات (Applets) ═══════ -->
+  <section id="tab-apps" class="tab">
+    <div class="box">
+      <h3>🔗 وصلات خارجية</h3>
+      <p class="hint">تطبيقات وخدمات متصلة بـHope — جوجل بحسابه، جيت هاب بمفتاح، بريد SMTP…
+        والمتصفح والطقس مدمجين دايمًا. نفس الوصلات بتبان في التطبيق على تليفون المدير.</p>
+      <div id="apListP" class="list"></div>
+    </div>
+  </section>
+
+  <!-- ═══════ نشاط حي (وضع الواقع) ═══════ -->
+  <section id="tab-brain" class="tab">
+    <div class="btn-row">
+      <button id="btnBrRefresh" class="btn">🔄 تحديث</button>
+      <span id="qCount" class="count"></span>
+      <span id="brLive" class="count">البث شغال…</span>
+    </div>
+    <div id="qPanel" class="list"></div>
+    <div id="brainFeed" class="list"></div>
+  </section>
+
+  <!-- ═══════ مساحة العمل (ملفاته) ═══════ -->
+  <section id="tab-ws" class="tab">
+    <p class="hint">كل ملفات Hope جوه عقله — ذاكرته، ملاحظاته، وقوائمه. يقدر تقرأ منه وتختار.</p>
+    <div id="wsFiles" class="list"></div>
+    <pre id="wsView" class="out hidden"></pre>
+  </section>
+
+  <!-- ═══════ السجل ═══════ -->
+  <section id="tab-logs" class="tab">
+    <div id="logsList" class="list"></div>
+  </section>
+
+</main>
+
+<!-- ═══════ بوابة الرمز ═══════ -->
+<div id="gate" class="overlay">
+  <div class="gate-card">
+    <div class="orb"></div>
+    <h2>لوحة تحكم Hope</h2>
+    <p>ادخل كلمة السر (نفس كلمة سر التطبيق)</p>
+    <input id="gateInput" type="password" inputmode="numeric" placeholder="كلمة السر" />
+    <button id="gateBtn">دخول</button>
+    <p id="gateErr" class="err"></p>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+<script src="/panel.js"></script>
+</body>
+</html>
