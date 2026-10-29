@@ -24,9 +24,12 @@ function toast(msg, ms = 2800) {
 }
 async function api(path, opts = {}) {
   opts.headers = Object.assign({ "X-Token": token }, opts.headers || {});
-  const r = await fetch(path, opts);
+  let r;
+  try { r = await fetch(path, opts); }
+  catch (e) { return { error: "offline", mode: "local" }; }   // شبكة واقعة — مش كلمة سر غلط
   if (r.status === 401) { showGate("كلمة السر غلط"); throw new Error("401"); }
-  return r.json();
+  try { return await r.json(); }
+  catch (e) { return { error: "offline", mode: "local" }; }   // رد مش JSON (زي 404 بتاع الاستضافة)
 }
 const post = (path, body) =>
   api(path, { method: "POST", headers: { "Content-Type": "application/json" },
