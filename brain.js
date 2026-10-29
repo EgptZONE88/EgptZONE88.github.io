@@ -363,12 +363,32 @@
 
   /* ── تفاعل: سحب/تقريب/لمس ── */
   const ptrs = new Map();
-  let dragging = false, lastPX = 0, lastPY = 0, pinchD = 0;
+  let dragging = false, lastPX = 0, lastPY = 0, pinchD = 0, tap0 = null;
   cv.style.touchAction = "none";
+  function markAt(mx, my) {
+    let best = null, hd = 30;
+    for (const p of marks.values()) {
+      if (p.visible === false) continue;
+      const s = m2s(p.x, p.y);
+      const d = Math.hypot(s.x - mx, s.y - my - 8);
+      if (d < hd) { hd = d; best = p; }
+    }
+    return best;
+  }
+  /* لمس علامة (مكتب/ذاكرة/ملفات…) = يفتح الشاشة المرتبطة بيها */
+  function openMark(p) {
+    if (!p) return;
+    puckNav(p.id, "فتح " + (p.label || ""));
+    dropBurst(p.id);
+    if (typeof window.hopeOpenMark === "function") {
+      try { window.hopeOpenMark(p.id, p.label || ""); } catch (err) { /* شاشة مش جاهزة */ }
+    }
+  }
   cv.addEventListener("pointerdown", (e) => {
     cv.setPointerCapture(e.pointerId);
     ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
     dragging = true; lastPX = e.clientX; lastPY = e.clientY;
+    if (ptrs.size === 1) tap0 = { id: e.pointerId, x: e.clientX, y: e.clientY, t: Date.now() };
   });
   cv.addEventListener("pointermove", (e) => {
     if (ptrs.has(e.pointerId)) ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
@@ -384,17 +404,24 @@
     }
     const r = cv.getBoundingClientRect();
     const mx = e.clientX - r.left, my = e.clientY - r.top;
-    let hov = null, hd = 30;
-    for (const p of marks.values()) {
-      if (p.visible === false) continue;
-      const s = m2s(p.x, p.y);
-      const d = Math.hypot(s.x - mx, s.y - my - 8);
-      if (d < hd) { hd = d; hov = p; }
-    }
-    hovered = hov;
-    cv.style.cursor = hov ? "pointer" : "grab";
+    hovered = markAt(mx, my);
+    cv.style.cursor = hovered ? "pointer" : "grab";
   });
-  const endPtr = (e) => { ptrs.delete(e.pointerId); if (ptrs.size < 2) pinchD = 0; if (!ptrs.size) dragging = false; };
+  const endPtr = (e) => {
+    ptrs.delete(e.pointerId);
+    if (ptrs.size < 2) pinchD = 0;
+    if (!ptrs.size) dragging = false;
+    /* لمسة قصيرة (مش سحب) على علامة → يفتح وجهتها */
+    if (tap0 && tap0.id === e.pointerId) {
+      const moved = Math.hypot(e.clientX - tap0.x, e.clientY - tap0.y);
+      if (moved < 12 && Date.now() - tap0.t < 700) {
+        const r = cv.getBoundingClientRect();
+        const p = markAt(e.clientX - r.left, e.clientY - r.top);
+        if (p) openMark(p);
+      }
+      tap0 = null;
+    }
+  };
   cv.addEventListener("pointerup", endPtr);
   cv.addEventListener("pointercancel", endPtr);
   cv.addEventListener("pointerleave", () => { hovered = null; }, { passive: true });

@@ -909,11 +909,24 @@ document.querySelectorAll(".sug").forEach((b) =>
   b.addEventListener("click", () => sendText(b.dataset.q)));
 
 /* ═══════ جوجل درايف ═══════ */
+/* ═══════ طبقة الـ API — ما تكسرش أبدًا لو مافيش سيرفر (GitHub/Vercel/Netlify)
+   401 = سيرفر حقيقي رفض كلمة السر · أي حاجة تانية = وضع أوفلاين/محلي ═══════ */
 async function api(path, opts = {}) {
   opts.headers = Object.assign({ "X-Token": token }, opts.headers || {});
-  const r = await fetch(path, opts);
+  let r;
+  try {
+    r = await fetch(path, opts);
+  } catch (e) {
+    // مافيش نت للسيرفر خالص — الوضع المحلي يستمر
+    return { error: "offline", mode: "local" };
+  }
   if (r.status === 401) { showGate("كلمة السر غلط"); throw new Error("401"); }
-  return r.json();
+  try {
+    return await r.json();
+  } catch (e) {
+    // استجابة HTML (صفحة 404 مخزّنة مثلاً) — نعتبرها أوفلاين مش خطأ
+    return { error: "offline", mode: "local" };
+  }
 }
 function paintGoogle(g) {
   const b = $("googleBtn");
@@ -1122,6 +1135,28 @@ function uiCmd(c) {
   } catch (e) { /* شاشة لسه مش جاهزة — متجاهلين */ }
 }
 
+/* ═══════ لمسة على علامة في خريطة العقل → يفتح الشاشة/الملفات المرتبطة ═══════ */
+const MARK_OPEN = {
+  home: () => uiCmd({ view: "talk" }),
+  tasks: () => uiCmd({ brain: true, tab: "tasks" }),
+  agents: () => uiCmd({ brain: true, tab: "agents" }),
+  config: () => uiCmd({ settings: true }),
+  suppliers: () => { uiCmd({ brain: true, tab: "files" }); loadFileList("2026"); },
+  workers: () => { uiCmd({ brain: true, tab: "files" }); loadFileList("2026"); },
+  sheets: () => { uiCmd({ brain: true, tab: "files" }); loadFileList("2026"); },
+  notes: () => uiCmd({ brain: true, tab: "notes" }),
+  memory: () => { uiCmd({ brain: true, tab: "files" }); loadFileList("memory"); },
+  wa: () => uiCmd({ brain: true, tab: "wa" }),
+  im: () => uiCmd({ brain: true, tab: "wa" }),
+  web: () => uiCmd({ brain: true, tab: "browse" }),
+  drive: () => uiCmd({ brain: true, tab: "apps" }),
+};
+window.hopeOpenMark = function (id, label) {
+  const fn = MARK_OPEN[id];
+  if (fn) { try { fn(); } catch (e) {} }
+  else uiCmd({ brain: true, tab: "files", toast: (label || "اتفتح") });
+};
+
 /* تبويبات العقل */
 document.querySelectorAll(".brain-tabs button").forEach((b) => {
   if (!b.dataset.bt) return;
@@ -1276,15 +1311,19 @@ async function loadFileList(p = ".") {
       return;
     }
     items.forEach((it) => {
+      const row = it.is_dir ? (p === "." ? it.name : p + "/" + it.name) : it.path;
       const d = document.createElement("div");
-      d.className = "file-item" + (it.is_dir ? "" : " clickable");
+      d.className = "file-item clickable";
       d.innerHTML = '<span class="file-icon">' + (it.is_dir ? "📁" : "📄") + '</span>' +
         '<div class="file-info"><div class="file-name" title="' + it.name + '">' + it.name + '</div>' +
-        '<div class="file-size">' + (it.is_dir ? "مجلد" : (it.size / 1024).toFixed(1) + " KB") + "</div></div>";
+        '<div class="file-size">' + (it.is_dir ? "مجلد" : (it.size / 1024).toFixed(1) + " KB") + "</div></div>" +
+        '<button class="file-ext" type="button" title="فتح في نافذة خارجية للتعديل">↗</button>';
+      const extBtn = d.querySelector(".file-ext");
+      if (extBtn) extBtn.onclick = (e) => { e.stopPropagation(); openFileExternal(row); };
       if (!it.is_dir) {
-        d.onclick = () => { loadFileRead(p + "/" + it.name); };
+        d.onclick = () => { loadFileRead(row); };
       } else {
-        d.onclick = () => { loadFileList(p + "/" + it.name); };
+        d.onclick = () => { loadFileList(row); };
       }
       box.appendChild(d);
     });
@@ -1293,6 +1332,8 @@ async function loadFileList(p = ".") {
   }
 }
 
+let fileViewPath = "";
+
 async function loadFileRead(relPath) {
   const viewer = $("fileViewer");
   const contentEl = $("fileViewContent");
@@ -1300,6 +1341,7 @@ async function loadFileRead(relPath) {
   if (!viewer || !contentEl || !nameEl) return;
   try {
     const r = await api("/api/files/read?p=" + encodeURIComponent(relPath));
+    fileViewPath = relPath;
     nameEl.textContent = r.name || relPath;
     contentEl.textContent = r.content || "(فارغ)";
     viewer.classList.remove("hidden");
@@ -1307,6 +1349,21 @@ async function loadFileRead(relPath) {
     toast("تعذّر قراءة الملف: " + String(e).slice(0, 80), 3500);
   }
 }
+
+/* فتح ملف/مجلد في برنامج خارجي على الكمبيوتر (Notepad/Explorer…) للتعديل اليدوي */
+async function openFileExternal(relPath) {
+  if (!relPath) return;
+  try {
+    const r = await api("/api/files/open?p=" + encodeURIComponent(relPath));
+    if (r && r.error === "offline") { toast("الفتح الخارجي محتاج سيرفر هوب المفتوح على الكمبيوتر (localhost:8765)", 3500); return; }
+    if (r && r.ok) toast("اتفتح على الكمبيوتر — عدّل واحفظ ✔", 2500);
+    else toast((r && r.error) ? "تعذّر الفتح: " + r.error : "تعذّر الفتح", 3000);
+  } catch (e) {
+    toast("تعذّر الفتح الخارجي", 2500);
+  }
+}
+
+$("fileViewOpen").addEventListener("click", () => { if (fileViewPath) openFileExternal(fileViewPath); });
 
 $("fileViewer").addEventListener("click", (e) => {
   if (e.target.id === "fileViewer" || e.target.id === "fileViewClose") {
@@ -2237,12 +2294,23 @@ async function openQr() {
   urlEl.textContent = phone;
   img.src = "/api/qr?u=" + encodeURIComponent(phone) + "&t=" + Date.now();
   $("qrOpen").onclick = () => window.open(phone, "_blank");
-  // زر التطبيق على النت — يفتح على الرابط المنشور (يحدثه المدير من الإعدادات)
+  // زر رابط الموقع المنشور — GitHub Pages (افتراضي) — يفتح نفس التطبيق
   const netlifyUrl = localStorage.getItem("netlifyUrl") || "https://egptzone88.github.io/";
-  $("qrNetlify").onclick = () => window.open(netlifyUrl, "_blank");
-  $("qrNetlify").innerHTML = '<span class="net-icon">🚀</span> افتح على النت (' +
-    netlifyUrl.split("//")[1].split("/")[0] + ")";
-  // أيقونة QR القابلة للنقر — نفس الرابط
+  const btnGh = $("qrNetlify");
+  if (btnGh) {
+    btnGh.onclick = () => window.open(netlifyUrl, "_blank");
+    btnGh.innerHTML = '<span class="net-icon">🚀</span> GitHub Pages (' +
+      netlifyUrl.split("//")[1].split("/")[0] + ")";
+  }
+  // زر رابط Vercel البديل — نفس التطبيق بالظبط
+  const vercelUrl = localStorage.getItem("vercelUrl") || "https://hope-agent.vercel.app/";
+  const btnVc = $("qrVercel");
+  if (btnVc) {
+    btnVc.onclick = () => window.open(vercelUrl, "_blank");
+    btnVc.innerHTML = '<span class="net-icon">⚡</span> Vercel (' +
+      vercelUrl.split("//")[1].split("/")[0] + ")";
+  }
+  // أيقونة QR القابلة للنقر — نفس رابط GitHub Pages
   const nlLink = $("netlifyQrLink");
   if (nlLink) nlLink.href = netlifyUrl;
   const nlImg = $("qrNetlifyImg");
@@ -2286,12 +2354,25 @@ $("netlifyUrl").addEventListener("change", () => {
   const v = $("netlifyUrl").value.trim();
   if (v) {
     localStorage.setItem("netlifyUrl", v);
-    toast("تم حفظ رابط Netlify", 2000);
+    toast("تم حفظ رابط GitHub Pages", 2000);
   }
 });
+if ($("vercelUrl")) {
+  $("vercelUrl").addEventListener("change", () => {
+    const v = $("vercelUrl").value.trim();
+    if (v) {
+      localStorage.setItem("vercelUrl", v);
+      toast("تم حفظ رابط Vercel", 2000);
+    }
+  });
+}
 $("setBtn").addEventListener("click", () => {
   const saved = localStorage.getItem("netlifyUrl");
   if (saved) $("netlifyUrl").value = saved;
+  if ($("vercelUrl")) {
+    const sv = localStorage.getItem("vercelUrl");
+    if (sv) $("vercelUrl").value = sv;
+  }
   $("setSheet").classList.remove("hidden");
 });
 

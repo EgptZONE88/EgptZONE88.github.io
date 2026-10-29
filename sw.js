@@ -1,5 +1,5 @@
 /* sw.js — تخزين الواجهة عشان تفتح بسرعة وتتجنّب "added to home screen" */
-const CACHE = "hope-v13";
+const CACHE = "hope-v14";
 const ASSETS = [
   "/", "/index.html", "/style.css", "/app.js", "/brain.js", "/manifest.json",
   "/store.js", "/offline.js", "/sync.js", "/im.js", "/ondevice.js",

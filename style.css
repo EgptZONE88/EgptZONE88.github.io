@@ -1185,6 +1185,27 @@ a.aphint { text-decoration: none; border-bottom: 1px dotted var(--muted); }
 }
 .file-actions button { flex: 1; }
 
+/* زر الفتح الخارجي على كل صف ملف/مجلد ↗ */
+.file-ext {
+  flex: 0 0 auto; margin-inline-start: auto;
+  background: var(--bg2); color: var(--brand);
+  border: 1px solid var(--line); border-radius: 8px;
+  font-size: var(--type-m); line-height: 1;
+  padding: 7px 10px; cursor: pointer; transition: all .2s;
+}
+.file-ext:hover { background: var(--brand); color: #0a0a0f; transform: translateY(-1px); }
+.file-ext:active { transform: scale(.94); }
+
+/* رمزين QR جنب بعض — نفس التطبيق على رابطين */
+.qr-duo {
+  display: flex; gap: var(--space-3); justify-content: center; flex-wrap: wrap;
+}
+.qr-tag {
+  display: block; margin-top: 6px;
+  font-size: var(--type-xs); color: var(--fg1);
+}
+#fileViewOpen { font-size: var(--type-s); }
+
 /* محتوى الملف المعروض */
 .file-viewer {
   position: fixed; inset: 0; z-index: 55;

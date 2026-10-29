@@ -235,18 +235,28 @@
       <button id="qrNetlify" type="button" class="netlify-entry">
         <span class="net-icon">🚀</span> افتح على Netlify
       </button>
+      <button id="qrVercel" type="button" class="netlify-entry">
+        <span class="net-icon">⚡</span> افتح على Vercel
+      </button>
       <button id="qrClose" type="button" class="ghost">✕ إغلاق</button>
     </div>
-    <p class="qr-hint">لو الكاميرا ما اشتغلتش: انسخ الرابط وافتحه في كروم على التليفون (نفس الواي فاي).</p>
+    <p class="qr-hint">الاتنين نفس التطبيق ونفس آخر نسخة — اختار اللي يفتح عندك.</p>
 
-    <!-- أيقونة التطبيق العامة — نفس اللوقو، قابلة للنقر والمسح -->
+    <!-- أيقونة التطبيق العامة — رمزين قابلين للنقر والمسح، نفس التطبيق -->
     <div class="netlify-qr-block">
       <p class="bsub">📲 رمز التطبيق على الإنترنت — امسحه أو دوس عليه:</p>
-      <a id="netlifyQrLink" class="netlify-qr-link" href="https://egptzone88.github.io/"
-         target="_blank" rel="noopener" title="افتح Hope على النت">
-        <img id="qrNetlifyImg" src="/icons/qr-netlify.png" alt="QR تطبيق الإنترنت" width="176" height="176" />
-      </a>
-      <p class="bsub" dir="ltr">https://egptzone88.github.io/</p>
+      <div class="qr-duo">
+        <a id="netlifyQrLink" class="netlify-qr-link" href="https://egptzone88.github.io/"
+           target="_blank" rel="noopener" title="افتح Hope على GitHub Pages">
+          <img id="qrNetlifyImg" src="/icons/qr-netlify.png" alt="QR GitHub Pages" width="150" height="150" />
+          <span class="qr-tag">🚀 GitHub Pages</span>
+        </a>
+        <a id="vercelQrLink" class="netlify-qr-link" href="https://hope-agent.vercel.app/"
+           target="_blank" rel="noopener" title="افتح Hope على Vercel">
+          <img id="qrVercelImg" src="/icons/qr-vercel.png" alt="QR Vercel" width="150" height="150" />
+          <span class="qr-tag">⚡ Vercel</span>
+        </a>
+      </div>
     </div>
   </div>
 </div>
@@ -403,6 +413,7 @@
     <div id="fileViewer" class="file-viewer hidden">
       <div class="file-view-head">
         <span id="fileViewName"></span>
+        <button id="fileViewOpen" type="button" title="فتح الملف في برنامج خارجي للتعديل">↗ فتح خارجي</button>
         <button id="fileViewClose" type="button">✕</button>
         <button id="fileViewAsk" class="btn-gold" type="button">🎙 اسأل Hope عنها</button>
       </div>
@@ -426,8 +437,11 @@
         <option>Fenrir</option><option>Aoede</option><option>Leda</option><option>Zephyr</option>
       </select>
     </label>
-    <div class="setrow"><span>رابط التطبيق على Netlify 🌐</span>
+    <div class="setrow"><span>رابط التطبيق على GitHub Pages 🌐</span>
       <input id="netlifyUrl" type="url" placeholder="https://egptzone88.github.io/" dir="ltr" />
+    </div>
+    <div class="setrow"><span>رابط التطبيق على Vercel ⚡</span>
+      <input id="vercelUrl" type="url" placeholder="https://hope-agent.vercel.app/" dir="ltr" />
     </div>
     <div class="setrow"><span>تنبيهات أسئلته 🔔</span>
       <button id="notifBtn" class="mini" type="button">تفعيل</button></div>
